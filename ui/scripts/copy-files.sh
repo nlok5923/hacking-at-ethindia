@@ -1,0 +1,9 @@
+cp ../hardhat/circuits/build/circuit_final.zkey public/
+cp ../hardhat/circuits/build/circuit_js/circuit.wasm public/
+cp ../hardhat/artifacts/contracts/verifier.sol/Verifier.json src/artifacts/
+cp ../hardhat/artifacts/contracts/OTPFactory.sol/OTPFactory.json src/artifacts/
+cp ../hardhat/artifacts/contracts/OTP.sol/OTP.json src/artifacts/
+cp ../hardhat/artifacts/contracts/Create2Factory.sol/Create2Factory.json src/artifacts/
+cp ../hardhat/artifacts/contracts/MyWalletDeployer.sol/MyWalletDeployer.json src/artifacts/
+cp ../hardhat/artifacts/contracts/MyWallet.sol/MyWallet.json src/artifacts/
+cp ../hardhat/artifacts/contracts/core/EntryPoint.sol/EntryPoint.json src/artifacts/
