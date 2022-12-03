@@ -132,5 +132,4 @@ hardhat/cache
 hardhat/deployments
 
 
-ui/src/dist
 ui/src/TypeScript
