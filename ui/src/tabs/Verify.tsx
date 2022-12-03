@@ -3,7 +3,11 @@ import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import Alert from "@mui/material/Alert";
-import { getAaParams, naiveProof, blockTimestampProof } from "../contract";
+import { 
+    // getAaParams, 
+    naiveProof, 
+    // blockTimestampProof
+ } from "../contract";
 import Loading from "./components/Loading";
 import { Typography } from "@mui/material";
 import { generateInput } from "../util";
@@ -42,12 +46,12 @@ export default function Verify() {
                 });
             console.log(`INPUT:`)
             console.log(INPUT)
-            let res = await getAaParams()
-            const aaProvider = await res.aaProvier
-            const aaSigner = await aaProvider.getSigner()
-            scwAddress = await aaSigner.getAddress()
-            console.log(`scw address: ${scwAddress}`)
-            let tx = await naiveProof(INPUT, amount, recepient)
+            // let res = await getAaParams()
+            // const aaProvider = await res.aaProvier
+            // const aaSigner = await aaProvider.getSigner()
+            // scwAddress = await aaSigner.getAddress()
+            // console.log(`scw address: ${scwAddress}`)
+            let tx:any = await naiveProof(INPUT, amount, recepient)
                 .catch((error: any) => {
                     setErrorMsg(error.toString());
                     setError(true);
@@ -55,6 +59,7 @@ export default function Verify() {
                     throw error;
                 });
             console.log(tx);
+
             if(tx.hash){
                 setConfirmation(tx.hash)
                 setSuccess(true)
@@ -74,32 +79,32 @@ export default function Verify() {
         event.preventDefault();
     }
 
-    const blockProve = async (event: any) => {
-        event.preventDefault();
-        setError(false);
-        setSuccess(false);
+    // const blockProve = async (event: any) => {
+    //     event.preventDefault();
+    //     setError(false);
+    //     setSuccess(false);
 
-        setVerifying(true);
-        if (localStorage.getItem("OTPhashes")) {
-            let INPUT = await generateInput(otp);
-            let tx = await blockTimestampProof(INPUT)
-                .catch((error: any) => {
-                    setErrorMsg(error.toString());
-                    setError(true);
-                    setVerifying(false);
-                });
-            let txConfirmation = await tx.wait();
-            setConfirmation(txConfirmation.transactionHash);
-            setSuccess(true);
-        } else {
-            setErrorMsg("No OTP contract address found. Deploy first.");
-            setError(true);
-            setVerifying(false);
-        }
+    //     setVerifying(true);
+    //     if (localStorage.getItem("OTPhashes")) {
+    //         let INPUT = await generateInput(otp);
+    //         let tx = await blockTimestampProof(INPUT)
+    //             .catch((error: any) => {
+    //                 setErrorMsg(error.toString());
+    //                 setError(true);
+    //                 setVerifying(false);
+    //             });
+    //         let txConfirmation = await tx.wait();
+    //         setConfirmation(txConfirmation.transactionHash);
+    //         setSuccess(true);
+    //     } else {
+    //         setErrorMsg("No OTP contract address found. Deploy first.");
+    //         setError(true);
+    //         setVerifying(false);
+    //     }
 
-        setVerifying(false);
-        event.preventDefault();
-    }
+    //     setVerifying(false);
+    //     event.preventDefault();
+    // }
 
     const aHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
         if (event.target.value !== "") {
