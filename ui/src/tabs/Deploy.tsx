@@ -6,7 +6,8 @@ import { deployOTP } from "../contract";
 import Loading from "./components/Loading";
 import { Typography } from "@mui/material";
 import { generateMerkleTree } from "../util";
-import { getAaParams, setRootAndVerifier } from "../contract";
+// import { getAaParams, setRootAndVerifier } from "../contract";
+
 export default function Deploy() {
 
     const [error, setError] = useState(false);
@@ -39,9 +40,9 @@ export default function Deploy() {
                 setDeploying(false);
                 throw error;
             }));
-        let {smartWalletAPI, httpRpcClient, aaProvier} = await getAaParams();
+        // let {smartWalletAPI, httpRpcClient, aaProvier} = await getAaParams();
         // await setRootAndVerifier(smartWalletAPI, aaProvier)
-        setScwAddress(await aaProvier.getSigner().getAddress())
+        // setScwAddress(await aaProvier.getSigner().getAddress())
         setDeploying(false);
         setDeployed(true);
         event.preventDefault();
