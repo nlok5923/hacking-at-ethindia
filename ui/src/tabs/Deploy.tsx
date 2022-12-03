@@ -7,7 +7,6 @@ import Loading from "./components/Loading";
 import { Typography } from "@mui/material";
 import { generateMerkleTree } from "../util";
 import { getAaParams, setRootAndVerifier } from "../contract";
-
 export default function Deploy() {
 
     const [error, setError] = useState(false);
