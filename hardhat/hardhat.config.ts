@@ -27,13 +27,26 @@ export default {
     mumbai: {
       url: process.env.MUMBAI_URL || '',
       accounts: process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : []
-      
   },
   goerli: {
     url: `https://goerli.infura.io/v3/be456f1154af4971877c7c52dd5a612a`,
     accounts: process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : []
-  }
   },
+  shardeum: {
+    url: `https://liberty10.shardeum.org/`,
+    accounts: process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : []
+  }, 
+  cronosTestnet: {
+    url: "https://evm-t3.cronos.org/",
+    chainId: 338,
+    accounts: process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : []
+  },
+  cronos: {
+    url: "https://evm.cronos.org/",
+    chainId: 25,
+    accounts: process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : []
+  },
+},
   etherscan: {
     apiKey: process.env.POLYGONSCAN_API_KEY,
  }

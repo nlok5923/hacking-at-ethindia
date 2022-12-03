@@ -11,6 +11,7 @@ import {
 import Loading from "./components/Loading";
 import { Typography } from "@mui/material";
 import { generateInput } from "../util";
+import { ethers } from 'ethers'
 
 export default function Verify() {
 
@@ -126,12 +127,35 @@ export default function Verify() {
         }
     };
 
-    const recepientHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
-        if (event.target.value !== "") {
-            setRecepient(event.target.value);
-            setRecepientDisable(false);
+    const checkIsEns = async (ens: any) => {
+        try {
+            const provider = new ethers.providers.JsonRpcProvider(
+                "https://distinguished-proportionate-lambo.ethereum-goerli.discover.quiknode.pro/19075e8d1e6aa4417cc3f7df2ad82e080ef8119f/"
+            );
+
+            const address = await provider.resolveName(ens);
+
+            if(address) {
+                if(address.length === 42) return address;
+                else return "no";
+            }
+            return "no"
+                          
+        } catch (err) {
+            console.log(err);
         }
-        else {
+    }
+
+    const recepientHandler = async (event: React.ChangeEvent<HTMLInputElement>) => {
+        console.log(event.target.value);
+        if(event.target.value.length === 42 && ethers.utils.isAddress(event.target.value)) {
+            setRecepient(event.target.value);
+            console.log("yes: ", event.target.value);
+            setRecepientDisable(false);
+        } else {
+            let isEns: any  = await checkIsEns(event.target.value)
+            console.log("valid ens: ", isEns);
+            setRecepient(isEns);
             setRecepientDisable(true);
         }
     };
@@ -144,7 +168,7 @@ export default function Verify() {
 
 
     const keyHandler = async (event: any) => {
-        if (['e', 'E', '+', '.', 'Enter'].includes(event.key)) {
+        if (['E', '+', 'Enter'].includes(event.key)) {
             event.preventDefault();
         }
     };
@@ -186,7 +210,7 @@ export default function Verify() {
             <TextField
                 id="input-recepient"
                 label="recepient"
-                type="string"
+                // type="string"
                 InputLabelProps={{
                     shrink: true,
                 }}
