@@ -13,7 +13,7 @@ import {
 } from './typechain'
 import { UserOperation } from './UserOperation'
 import { Create2Factory } from '../src/Create2Factory'
-import ethers from 'ethers'
+import { ethers } from 'ethers'
 
 const AddressZero = ethers.constants.AddressZero
 const HashZero = ethers.constants.HashZero
