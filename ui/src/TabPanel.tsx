@@ -5,6 +5,10 @@ import Container from '@mui/material/Container'
 import Box from '@mui/material/Box';
 import Verify from './tabs/Verify';
 import Deploy from './tabs/Deploy';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Select, { SelectChangeEvent } from '@mui/material/Select';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -14,6 +18,7 @@ interface TabPanelProps {
 
 function TabPanel(props: TabPanelProps) {
   const { children, value, index, ...other } = props;
+
   
   return (
     <div
@@ -46,6 +51,12 @@ export default function BasicTabs() {
     setValue(newValue);
   };
 
+  const [chain, setChain] = React.useState('');
+
+  const handleChainChange = (event: SelectChangeEvent) => {
+    setChain(event.target.value as string);
+  };
+
   return (
     <Box sx={{ width: '100%' }}>
       <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
@@ -61,12 +72,33 @@ export default function BasicTabs() {
           <Tab label="Deploy" {...a11yProps(1)} />
           <Tab label="Send Asset" {...a11yProps(2)} />
         </Tabs>
+
+        <Box sx={{ minWidth: 120 }}>
+      <FormControl fullWidth>
+        <InputLabel id="demo-simple-select-label">Select Chain</InputLabel>
+        <Select
+          labelId="demo-simple-select-label"
+          id="demo-simple-select"
+          value={chain}
+          label="chain"
+          onChange={handleChainChange}
+        >
+          <MenuItem value={"Polygon"}>Polygon</MenuItem>
+          <MenuItem value={"Shardeum"}>Shardeum</MenuItem>
+          <MenuItem value={"Cronos"}>Cronos</MenuItem>
+          <MenuItem value={"Gnosis"}>Gnosis</MenuItem>
+        </Select>
+      </FormControl>
+    </Box>
+
       </Box>
       {/* <TabPanel value={value} index={1}>
         <Container><About /></Container>
       </TabPanel> */}
       <TabPanel value={value} index={1}>
-        <Container><Deploy /></Container>
+        <Container>
+          <Deploy />
+          </Container>
       </TabPanel>
       <TabPanel value={value} index={2}>
         <Verify />

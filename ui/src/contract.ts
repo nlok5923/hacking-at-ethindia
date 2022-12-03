@@ -169,7 +169,7 @@ export async function getAaParams()
 
     const aaSigner = aaProvier.getSigner()
 
-    return {smartWalletAPI, httpRpcClient, aaProvier}
+    return {smartWalletAPI, httpRpcClient, aaProvier, ownerAddress}
 }
 export async function connectFactory() {
     const { ethereum } = window;

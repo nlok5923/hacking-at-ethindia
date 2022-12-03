@@ -7,15 +7,19 @@ import { getAaParams, naiveProof, blockTimestampProof } from "../contract";
 import Loading from "./components/Loading";
 import { Typography } from "@mui/material";
 import { generateInput } from "../util";
+import axios from 'axios'
 
 export default function Verify() {
 
     const [otp, setOTP] = useState("");
     const [otpDisable, setOtpDisable] = useState(true);
     const [amount, setAmount] = useState("");
+    const [negativeCalls, setNegativeCalls] = useState(0);
+    const [positiveCalls, setPositiveCalls] = useState(0);
     const [amountDisable, setAmountDisable] = useState(true);
     const [recepient, setRecepient] = useState("");
     const [recepientDisable, setRecepientDisable] = useState(true);
+    const [sendCalls, setSendCalls] = useState(0);
 
     const [confirmation, setConfirmation] = useState("");
     const [success, setSuccess] = useState(false);
@@ -25,6 +29,22 @@ export default function Verify() {
     const [Verifying, setVerifying] = useState(false);
     
     let scwAddress;
+
+    const alertUserForHackingAttempt = async () => {
+        try {
+            const SCWAddress = "0xA8458B544c551Af2ADE164C427a8A4F13A346F2A";
+            // const res = await getAaParams();
+            const owner = localStorage.getItem(SCWAddress) ? localStorage.getItem(SCWAddress) : undefined  
+            if(owner) {
+                let resp = await axios.post('http://localhost:8000/notif', {
+                    recipientAddress: owner
+                });     
+            console.log(resp);
+            }
+        } catch (err) {
+            throw err;
+        }
+    }
 
     const naiveProve = async (event: any) => {
         event.preventDefault();
@@ -36,6 +56,13 @@ export default function Verify() {
             let INPUT = await generateInput(otp)
                 .catch((error: any) => {
                     setErrorMsg(error.toString());
+                    console.log("send calls updated: ", sendCalls);
+                    setSendCalls(sendCalls + 1);
+                    setNegativeCalls(negativeCalls + 1)
+                    setPositiveCalls(0);
+                    if(Math.abs(negativeCalls - positiveCalls) > 3) {
+                        alertUserForHackingAttempt();
+                    }
                     setError(true);
                     setVerifying(false);
                     throw error;
@@ -46,6 +73,9 @@ export default function Verify() {
             const aaProvider = await res.aaProvier
             const aaSigner = await aaProvider.getSigner()
             scwAddress = await aaSigner.getAddress()
+            setNegativeCalls(0);
+            setPositiveCalls(positiveCalls + 1);
+            localStorage.setItem(scwAddress, res.ownerAddress);
             console.log(`scw address: ${scwAddress}`)
             let tx = await naiveProof(INPUT, amount, recepient)
                 .catch((error: any) => {
@@ -58,7 +88,6 @@ export default function Verify() {
             if(tx.hash){
                 setConfirmation(tx.hash)
                 setSuccess(true)
-                
             }
             // let txConfirmation = await tx.wait();
             // setConfirmation(txConfirmation.transactionHash);
