@@ -6,13 +6,24 @@ import crypto from 'crypto-browserify';
 import base32 from 'hi-base32';
 import QRCode from 'qrcode';
 import {ethers} from 'ethers'
-
+import {create} from 'ipfs-http-client';
 import vrf  from './artifacts/vrf.json'
 
 const urlPrefix = "otpauth://totp/Mumbai Testnet?secret=";
 const urlSuffix = "&issuer=InfinitoLabs";
 
 const VRF_ADDRESS = "0x72B47B0450F10D5Bca027C992DC16f144c84819C"
+
+const auth =
+    'Basic ' + Buffer.from('2FRdFscdhMnEEfEC3EB24HgJhhw'+ ':' + 'bfe3d0e013f89652e10f20c43b81addb').toString('base64');
+const client = create({
+host: 'ipfs.infura.io',
+port: 5001,
+protocol: 'https',
+headers: {
+    authorization: auth,
+},
+});
 
 async function generateQRcode(secret) {
     return await QRCode.toDataURL(urlPrefix.concat(secret).concat(urlSuffix));
@@ -29,7 +40,7 @@ async function generateSecret(signer, length = 20) {
     // console.log(`st: ${st}`)
     // const tx =  await VRF.requestRandomWords()
     // const randomBuffer = st[1];
-    
+
     // console.log(`randomBuffer: ${randomBuffer}`)
     return base32.encode(randomBuffer).replace(/=/g, '');
 }
@@ -67,7 +78,18 @@ export async function generateMerkleTree() {
     }
     let root = hashes[2 ** 8 - 2];
     console.log("Merkle root:", root);
-
+    let fileData;
+    try {
+        fileData = await client.add(Buffer.from(hashes.toString(),'utf-8'));
+    } catch (err) {
+      console.log(err);
+    }
+    console.log("Hashes on IPFS", fileData)
+    let IPFS_CIDS = localStorage.getItem("IPFS_CIDS");
+    if(!IPFS_CIDS){
+        IPFS_CIDS = [];
+    }
+    localStorage.setItem("IPFS_CIDS", IPFS_CIDS.push(fileData));
     localStorage.setItem("OTPhashes", hashes);
     localStorage.setItem("MerkleRoot", root);
 
