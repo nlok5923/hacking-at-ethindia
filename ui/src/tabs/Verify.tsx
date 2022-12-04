@@ -7,6 +7,7 @@ import { getAaParams, naiveProof, blockTimestampProof } from "../contract";
 import Loading from "./components/Loading";
 import { Typography } from "@mui/material";
 import { generateInput } from "../util";
+import './universal.css'
 
 export default function Verify() {
 
@@ -55,11 +56,11 @@ export default function Verify() {
                     throw error;
                 });
             console.log(tx);
-            if(tx.hash){
-                setConfirmation(tx.hash)
-                setSuccess(true)
+            // if(tx.hash){
+            //     setConfirmation(tx.hash)
+            //     setSuccess(true)
                 
-            }
+            // }
             // let txConfirmation = await tx.wait();
             // setConfirmation(txConfirmation.transactionHash);
             // setSuccess(true);
@@ -145,64 +146,102 @@ export default function Verify() {
     };
 
     return (
-        <Box
+        <div>
+          <div className="bg"></div>
+          <div className="bg bg2"></div>
+          <div className="bg bg3"></div>
+          <Box
             component="form"
             sx={{
-                "& .MuiTextField-root": { m: 1, width: "25ch" },
-                width: "99%", maxWidth: 600, margin: 'auto'
+              "& .MuiTextField-root": { m: 1, width: "100ch" },
+              width: "99%",
+              maxWidth: 1000,
+              margin: "auto",
             }}
             noValidate
             autoComplete="off"
             textAlign="center"
-        >
+          >
+            <h3 className="rcpt-pass" > Enter One time password (OTP) </h3>
             <TextField
-                id="input-otp"
-                label="otp"
-                type="number"
-                InputLabelProps={{
-                    shrink: true,
-                }}
-                variant="filled"
-                onKeyDown={keyHandler}
-                onChange={aHandler}
-                onKeyPress={enterHandler}
-            /><br />
+              id="input-otp"
+            //   label="otp"
+              type="number"
+              multiline={true}
+              rows={3}
+              InputLabelProps={{
+                shrink: true,
+              }}
+              fullWidth
+              variant="filled"
+              onKeyDown={keyHandler}
+              onChange={aHandler}
+              onKeyPress={enterHandler}
+            />
+            <br />
+            <h3 className="rcpt-amt"> Enter amount to transfer  </h3>
             <TextField
-                id="input-amount"
-                label="amount"
-                type="string"
-                InputLabelProps={{
-                    shrink: true,
-                }}
-                variant="standard"
-                onChange={amountHandler}
-                onKeyPress={enterHandler}
-            /><br />
+              id="input-amount"
+            //   label="amount"
+              type="string"
+              InputLabelProps={{
+                shrink: true,
+              }}
+              variant="standard"
+              onChange={amountHandler}
+              onKeyPress={enterHandler}
+            />
+            <br />
+            <h3 className="rcpt-rcpt"> Recipient address </h3>
             <TextField
-                id="input-recepient"
-                label="recepient"
-                type="string"
-                InputLabelProps={{
-                    shrink: true,
-                }}
-                variant="filled"
-                onKeyDown={keyHandler}
-                onChange={recepientHandler}
-                onKeyPress={enterHandler}
-            /><br />
-            
+              id="input-recepient"
+            //   label="recepient"
+              // type="string"
+              InputLabelProps={{
+                shrink: true,
+              }}
+              variant="filled"
+              onKeyDown={keyHandler}
+              onChange={recepientHandler}
+              onKeyPress={enterHandler}
+            />
+            <br />
+    
             <Button
-                onClick={naiveProve}
-                disabled={otpDisable}
-                variant="contained">
-                Verify and Send
+              style={{
+                borderRadius: 35,
+                backgroundColor: "#21b6ae",
+                padding: "18px 36px",
+                fontSize: "18px",
+                color: "black",
+                marginTop: "5%"
+              }}
+              variant="contained"
+              onClick={naiveProve}
+              disabled={otpDisable}
+            >
+              Verify and Send
             </Button>
-            
-            <br /><br />
+    
+            <br />
+            <br />
             {Verifying ? <Loading text="Verifying proof..." /> : <div />}
-            {error ? <Alert severity="error" sx={{ textAlign: "left" }}>{errorMsg}</Alert> : <div />}
-            {success ? <Typography>Please check your scw for confirmation {scwAddress}</Typography> : <div />}
+            {error ? (
+              <Alert severity="error" sx={{ textAlign: "left" }}>
+                {errorMsg}
+              </Alert>
+            ) : (
+              <div />
+            )}
+            {success ? (
+              <Typography>
+                Please check your scw for confirmation {scwAddress}
+              </Typography>
+            ) : (
+              <div />
+            )}
             {success ? <Typography>Tx hash: {confirmation}</Typography> : <div />}
-        </Box>
-    );
+          </Box>
+        </div>
+      );
 }

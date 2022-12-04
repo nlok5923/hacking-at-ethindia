@@ -5,7 +5,7 @@ import OTPFactory from './artifacts/OTPFactory.json';
 import { generateCalldata } from './circuit_js/generate_calldata';
 
 import Create2Factory from './artifacts/Create2Factory.json'
-import { hexConcat, hexlify, hexValue, hexZeroPad } from 'ethers/lib/utils';
+import { AbiCoder, hexConcat, hexlify, hexValue, hexZeroPad } from 'ethers/lib/utils';
 
 
 import { EntryPoint, EntryPoint__factory } from '@account-abstraction/contracts'
@@ -35,6 +35,7 @@ export async function connectContract(addr: string) {
     
 
     const { ethereum } = window;
+		let root = localStorage.getItem("MerkleRoot");
 
     let provider = new ethers.providers.Web3Provider(ethereum);
     let signer = provider.getSigner();
@@ -50,7 +51,7 @@ export async function connectContract(addr: string) {
 
     const ownerAddress = await signer.getAddress();
 
-    const walletAddress = await MyWalletDeployer.getDeploymentAddress(ENTRYPOINT_ADDR, ownerAddress, 0)
+    const walletAddress = await MyWalletDeployer.getDeploymentAddress(ENTRYPOINT_ADDR, ownerAddress, root, 0)
 
     console.log('--- end deploying MyWalletDeployer contract ---')
 
@@ -123,7 +124,7 @@ export async function setRootAndVerifier(smartWalletAPI: MyWalletApi, aaProvier:
 
 export async function getAaParams()
 {
-
+		let root = localStorage.getItem("MerkleRoot");
     const { ethereum } = window;
 
     let provider = new ethers.providers.Web3Provider(ethereum);
@@ -140,7 +141,7 @@ export async function getAaParams()
 
     const ownerAddress = await signer.getAddress();
 
-    const walletAddress = await MyWalletDeployer.getDeploymentAddress(ENTRYPOINT_ADDR, ownerAddress, 0)
+    const walletAddress = await MyWalletDeployer.getDeploymentAddress(ENTRYPOINT_ADDR, ownerAddress, root, 0)
 
     console.log('--- end deploying MyWalletDeployer contract ---')
 
@@ -199,20 +200,17 @@ export async function deployOTP(root: BigInt) {
 }
 
 export async function naiveProof(input: Object, amount: string, recepient: string) {
+    let root = localStorage.getItem("MerkleRoot");
+    let {smartWalletAPI, httpRpcClient, aaProvier} = await getAaParams(root);
     
-    // let {smartWalletAPI, httpRpcClient, aaProvier} = await getAaParams();
-    // const aaSigner = aaProvier.getSigner()
+    const aaSigner = aaProvier.getSigner()
 
-    // const scw = new ethers.ContractFactory(MyWallet__factory.abi, MyWallet__factory.bytecode);
-    if (localStorage.getItem('OTPaddress')) {
-        console.log(`local OTP contract address`)
-        console.log(localStorage.getItem('OTPaddress'));
-        await connectContract(localStorage.getItem('OTPaddress')!);
-    } else {
-        throw new Error("No OTP contract address found. Deploy first.");
-    }
+    const scw = new ethers.Contract('0xA094a2Dc2B363f934DE3858a56dF86Cd117a49ef', MyWallet__factory.abi, aaSigner)
+
+    
     console.log(`amount: ${amount} recepient: ${recepient}`)
-    let calldata = await generateCalldata(input);
+//ZK Proof being generated
+    const calldata: any = await generateCalldata(input);
     console.log("calldata")
     console.log(calldata)
     let tx;
@@ -221,35 +219,11 @@ export async function naiveProof(input: Object, amount: string, recepient: strin
         console.log(otp.address)
         console.log(`recepient: ${recepient} amount: ${amount}`)
 
-        // const nonce = await smartWalletAPI.getNonce();
-        // console.log(`nonce: `)
-        // console.log(`${nonce}`)
-        // const op = await smartWalletAPI.createSignedUserOp({
-        //     target: await aaSigner.getAddress(),
-        //     data: scw.interface.encodeFunctionData('transfer', [recepient, ethers.utils.parseEther(amount)])
-        // })
+        const tx = await scw.zkProof(calldata[0], calldata[1], calldata[2], calldata[3], ethers.utils.parseEther(amount), recepient)
+        const rc2 = await tx.wait()
+        console.log(rc2)
 
-        // console.log(`User Operation`)
-        // console.log(op)
-    
-        // tx = await aaProvier.httpRpcClient.sendUserOpToBundler(op)
-            
-        // console.log(`here`)
-        // console.log(tx)
-        tx = await otp.naiveApproval(calldata[0], calldata[1], calldata[2], calldata[3], recepient, {value: ethers.utils.parseEther(amount)})
-            .catch((error: any) => {
-                console.log(error);
-                let errorMsg;
-                if (error.reason) {
-                    errorMsg = error.reason;
-                } else if (error.data.message) {
-                    errorMsg = error.data.message;
-                } else {
-                    errorMsg = "Unknown error."
-                }
-                throw errorMsg;
-            });
-    } else {
+            } else {
         throw new Error("Witness generation failed.");
     }
     return tx;

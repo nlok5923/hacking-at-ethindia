@@ -1,0 +1,61 @@
+.home-header {
+    margin-top: 20%;
+    font-size: 70px;
+    font-family: "quicksand";
+    color: white;
+}
+
+.home-btn {
+    margin-top: 25%;
+    padding: 26px 50px;
+    border: transparent;
+    font-size: 20px;   
+    background-color: rgb(10, 34, 92);
+    color: white;
+    font-family: "quicksand";
+    border-radius: 6px;
+}
+
+.bg {
+    animation:slide 3s ease-in-out infinite alternate;
+    background-image: linear-gradient(-60deg, rgb(111, 3, 138) 50%, rgb(57, 59, 60) 50%);
+    bottom:0;
+    left:-50%;
+    opacity:.5;
+    position:fixed;
+    right:-50%;
+    top:0;
+    z-index:-1;
+  }
+  
+  .bg2 {
+    animation-direction:alternate-reverse;
+    animation-duration:4s;
+  }
+  
+  .bg3 {
+    animation-duration:5s;
+  }
+
+  @keyframes slide {
+    0% {
+      transform:translateX(-25%);
+    }
+    100% {
+      transform:translateX(25%);
+    }
+  }
+
+  .home-header-sub {
+    margin-top: 2%;
+    font-size: 25px;
+    font-family: "quicksand";
+    color: white;
+  }
+
+  .rcpt-pass, .rcpt-amt, .rcpt-rcpt {
+    font-size: 25px;
+    color: white;
+    font-family: "quicksand";
+    /* text-align: left; */
+  }

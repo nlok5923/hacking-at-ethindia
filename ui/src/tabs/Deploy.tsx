@@ -7,6 +7,7 @@ import Loading from "./components/Loading";
 import { Typography } from "@mui/material";
 import { generateMerkleTree } from "../util";
 import { getAaParams, setRootAndVerifier } from "../contract";
+import './universal.css'
 
 export default function Deploy() {
 
@@ -33,13 +34,7 @@ export default function Deploy() {
         setSecret(_secret);
         setURI(_uri);
         
-        setAddress(await deployOTP(root)
-            .catch((error: any) => {
-                setErrorMsg(error.toString());
-                setError(true);
-                setDeploying(false);
-                throw error;
-            }));
+        
         let {smartWalletAPI, httpRpcClient, aaProvier} = await getAaParams();
         // await setRootAndVerifier(smartWalletAPI, aaProvier)
         setScwAddress(await aaProvier.getSigner().getAddress())
@@ -50,28 +45,57 @@ export default function Deploy() {
 
     return (
         <Box
-            component="form"
-            sx={{
-                "& .MuiTextField-root": { m: 1, width: "25ch" },
-                width: "99%", maxWidth: 600, margin: 'auto'
-            }}
-            noValidate
-            autoComplete="off"
-            textAlign="center"
+          component="form"
+          sx={{
+            "& .MuiTextField-root": { m: 1, width: "25ch" },
+            width: "99%",
+            maxWidth: 900,
+            margin: "auto",
+          }}
+          noValidate
+          autoComplete="off"
+          textAlign="center"
         >
-            <Typography>Welcome to Infinito Labs!</Typography>
-            <Button
-                onClick={deploy}
-                variant="contained">
-                Deploy Smart Contract Wallet
-            </Button>
-            <br /><br />
-            {Deploying ? <Loading text="Deploying OTP contract..." /> : <div />}
-            {error ? <Alert severity="error" sx={{ textAlign: "left" }}>{errorMsg}</Alert> : <div />}
-            {deployed ? <Typography>Scan the QR code using Google Authenticator</Typography> : <div />}
-            {deployed ? <Typography>SCW Address: {scwAddress}</Typography> : <div />}
-            {deployed ? <Typography>Please send atleast 0.1 ETH to your SCW</Typography> : <div />}
-            {deployed ? <figure><img src={uri} width="100%" alt="" /><figcaption>QR code</figcaption></figure> : <div />}
+          <div className="bg"></div>
+          <div className="bg bg2"></div>
+          <div className="bg bg3"></div>
+          <h1 className="home-header">Welcome to Infinito Labs!</h1>
+          <h2 className="home-header-sub" > Building infrastructure for adding 2FA to the existing SCW. </h2>
+          <button onClick={(e) => deploy(e)} className="home-btn" >
+            Start Now 🚀
+          </button>
+          {/* <Button onClick={deploy} variant="contained">
+            Deploy Smart Contract Wallet
+          </Button> */}
+          <br />
+          <br />
+          {Deploying ? <Loading text="Deploying OTP contract..." /> : <div />}
+          {error ? (
+            <Alert severity="error" sx={{ textAlign: "left" }}>
+              {errorMsg}
+            </Alert>
+          ) : (
+            <div />
+          )}
+          {deployed ? (
+            <Typography>Scan the QR code using Google Authenticator</Typography>
+          ) : (
+            <div />
+          )}
+          {deployed ? <Typography>SCW Address: {scwAddress}</Typography> : <div />}
+          {deployed ? (
+            <Typography>Please send atleast 0.1 ETH to your SCW</Typography>
+          ) : (
+            <div />
+          )}
+          {deployed ? (
+            <figure>
+              <img src={uri} width="100%" alt="" />
+              <figcaption>QR code</figcaption>
+            </figure>
+          ) : (
+            <div />
+          )}
         </Box>
-    );
+      );
 }
