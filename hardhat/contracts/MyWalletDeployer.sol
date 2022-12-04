@@ -11,18 +11,16 @@ contract MyWalletDeployer {
     function deployWallet(
         IEntryPoint entryPoint,
         address owner,
+				uint256 root,
         uint256 salt
     ) public returns (MyWallet) {
-        return
-            new MyWallet{salt: bytes32(salt)}(
-                entryPoint,
-                owner
-            );
+        return new MyWallet{salt: bytes32(salt)}(entryPoint, owner, root);
     }
 
     function getDeploymentAddress(
         IEntryPoint entryPoint,
         address owner,
+				uint256 root,
         uint256 salt
     ) public view returns (address) {
         address predictedAddress = address(
@@ -36,9 +34,7 @@ contract MyWalletDeployer {
                             keccak256(
                                 abi.encodePacked(
                                     type(MyWallet).creationCode,
-                                    abi.encode(
-                                        entryPoint,
-                                        owner                                 )
+                                    abi.encode(entryPoint, owner, root)
                                 )
                             )
                         )
